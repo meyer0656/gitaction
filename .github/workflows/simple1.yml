@@ -6,7 +6,9 @@ on:
       state:
         description: 'U.S. state to scrape'
         required: true
-        default: 'fl'
+        default: 'ia'
+  schedule:
+  - cron: "0 0 * * *"
 
 permissions:
   contents: write
@@ -16,9 +18,12 @@ jobs:
     name: Scrape
     runs-on: ubuntu-latest
     steps:
+      - name: Hello world
+        run: echo "Scraping data for ${{ inputs.state }}"
+
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Install Python
         uses: actions/setup-python@v5
         with:
@@ -29,6 +34,9 @@ jobs:
 
       - name: Scrape
         run: warn-scraper ${{ inputs.state }} --data-dir ./data/
+
+      - name: Save datestamp
+        run: date > ./data/latest-scrape.txt
 
       - name: Commit and push
         run: |
